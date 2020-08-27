@@ -1,0 +1,20 @@
+{
+  "name": "@kubabogaczewicz/fpl",
+  "version": "0.0.1",
+  "description": "File-based Photo Library",
+  "type": "module",
+  "bin": {
+    "fpl": "bin/fpl.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Kuba Bogaczewicz <kuba.bogaczewicz@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "exiftool-vendored": "^12.1.0",
+    "ramda": "^0.27.1",
+    "yargs": "^15.4.1"
+  }
+}
