@@ -16,4 +16,4 @@ export const builder = (yargs) => {
     });
 };
 
-export const handler = (argv) => {};
+export const handler = async (argv) => {};

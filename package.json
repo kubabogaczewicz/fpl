@@ -13,7 +13,10 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@dinoabsoluto/flex-progress": "^2.4.0",
+    "chalk": "^4.1.0",
     "exiftool-vendored": "^12.1.0",
+    "ora": "^5.0.0",
     "ramda": "^0.27.1",
     "yargs": "^15.4.1"
   }
