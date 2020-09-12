@@ -13,4 +13,5 @@ yargs
     type: "boolean",
     description: "Run with verbose logging",
   })
+  .count("verbose")
   .parse();
