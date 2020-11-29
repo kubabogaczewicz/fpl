@@ -1,11 +1,16 @@
 import ef from "exiftool-vendored";
 import path from "path";
-import { notEmpty, regexpTest } from "./utils.js";
+import { regexpTest } from "./utils.js";
 
 const exiftool = ef.exiftool;
 
-class MediaFile {
-  constructor(dirpath, filename) {
+export abstract class MediaFile {
+  dirpath: string;
+  filename: string;
+  filepath: string;
+  metadata?: ef.Tags;
+
+  constructor(dirpath: string, filename: string) {
     this.dirpath = dirpath;
     this.filename = filename;
     this.filepath = path.join(dirpath, filename);
@@ -14,28 +19,30 @@ class MediaFile {
   async loadMetadata() {
     this.metadata = await exiftool.read(this.filepath);
   }
+
+  abstract isValid(): boolean;
 }
 
 export class ImageFile extends MediaFile {
   static match = regexpTest(/\.(jpe?g|heic)$/i);
 
-  constructor(dirpath, filename) {
+  constructor(dirpath: string, filename: string) {
     super(dirpath, filename);
   }
 
   isValid() {
-    return true;
+    return !!this.metadata?.GPSPosition;
   }
 }
 
 export class MovieFile extends MediaFile {
   static match = regexpTest(/\.(mov|mp4)$/i);
 
-  constructor(dirpath, filename) {
+  constructor(dirpath: string, filename: string) {
     super(dirpath, filename);
   }
 
   isValid() {
-    return notEmpty(this.metadata?.GPSPosition);
+    return true;
   }
 }
