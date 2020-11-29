@@ -33,6 +33,11 @@ export const builder = (yargs: yargs.Argv) => {
       choices: ["copy", "clone", "move"],
       default: "clone",
       description: "What to do with organized files.",
+    })
+    .option("subfolder-format", {
+      choices: ["year", "year-month"],
+      default: "year",
+      description: "How to split files into subfolders.",
     });
 };
 
@@ -50,12 +55,14 @@ type OrganizeArguments = FplArguments & {
   targetDirectory: string;
   dryRun: boolean;
   operation: "clone" | "copy" | "move";
+  subfolderFormat: "year" | "year-month";
 };
 export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
   const srcPath = argv.srcDirectory;
   const dstPath = argv.targetDirectory;
   const dryRun = argv.dryRun;
   const operation = argv.operation;
+  const subfolderFormat = argv.subfolderFormat;
   const verbose = Math.max(argv.verbose, dryRun ? 1 : 0);
   const limit = argv.limit;
 
@@ -143,21 +150,21 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
     ])(metadata)!;
     const createDateTime = exifCreateDateTime.toDateTime().toUTC();
     let processed = false;
-    const year = createDateTime.toFormat("yyyy");
-    ensureSubfolderExists(dstPath, year);
+    const subfolderPath = createDateTime.toFormat(subfolderFormat === "year" ? "yyyy" : "yyyy/LL");
+    ensureSubfolderExists(dstPath, subfolderPath);
     const formattedDate = createDateTime.toFormat("yyyy-LL-dd HH-mm-ss");
     let exclusiveSuffix = "";
     let retryCount = 0;
     const ext = fileExtension(file);
     let maybeFilename = `${formattedDate}${exclusiveSuffix}${ext}`;
-    let fullDstFilepath = path.join(dstPath, year, maybeFilename);
+    let fullDstFilepath = path.join(dstPath, subfolderPath, maybeFilename);
     while (!processed) {
       try {
         fs.accessSync(fullDstFilepath, fs.constants.F_OK);
         log.vvv(`File ${fullDstFilepath} already exists, try with bigger suffix`);
         exclusiveSuffix = ` (${++retryCount})`;
         maybeFilename = `${formattedDate}${exclusiveSuffix}${ext}`;
-        fullDstFilepath = path.join(dstPath, year, maybeFilename);
+        fullDstFilepath = path.join(dstPath, subfolderPath, maybeFilename);
       } catch (e) {
         // doesn't exists, we can copy!
         log.v(`${operation} ${file.filepath} → ${fullDstFilepath}`);
