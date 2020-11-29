@@ -12,15 +12,15 @@
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
-"@types/node@^14.14.3":
-  version "14.14.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.3.tgz#e1c09064121f894baaad2bd9f12ce4a41bffb274"
-  integrity sha512-33/L34xS7HVUx23e0wOT2V1qPF1IrHgQccdJVm9uXGTB9vFBrrzBtkQymT8VskeKOxjz55MSqMv0xuLq+u98WQ==
+"@types/node@^14.14.10":
+  version "14.14.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.10.tgz#5958a82e41863cfc71f2307b3748e3491ba03785"
+  integrity sha512-J32dgx2hw8vXrSbu4ZlVhn1Nm3GbeCFNw2FWL8S5QKucHGY0cyNwjdQdO+KMBZ4wpmC7KhLCiNsdk1RFRIYUQQ==
 
-"@types/ramda@^0.27.30":
-  version "0.27.30"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.27.30.tgz#6e08d2bd1559a0ffac07cfcf84ab006f0f54de8b"
-  integrity sha512-CexJeZyC7mydoquNThx1gHWltgZV8+pBX0JDKbNEET0TduqxS+iSecwLS+poFrknonD24xr9C0NY+0PpG4/+GQ==
+"@types/ramda@^0.27.32":
+  version "0.27.32"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.27.32.tgz#4f62ff4fc3a41dc32dd9df3cde53861b6ee69e6f"
+  integrity sha512-vdwZcWC+hlTxB//LZQLS1+VEdArImGI4yVKUpeqB8b9mBXgDFXCuQoOt8spQbi8fTyNLOdqRv6liSm2ckxWLog==
   dependencies:
     ts-toolbelt "^6.15.1"
 
@@ -29,10 +29,10 @@
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-15.0.0.tgz#cb3f9f741869e20cce330ffbeb9271590483882d"
   integrity sha512-FA/BWv8t8ZWJ+gEOnLLd8ygxH/2UFbAvgEonyfN6yWGLKc7zVjbpl2Y4CTjid9h2RfgPP6SEt6uHwEOply00yw==
 
-"@types/yargs@^15.0.9":
-  version "15.0.9"
-  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-15.0.9.tgz#524cd7998fe810cdb02f26101b699cccd156ff19"
-  integrity sha512-HmU8SeIRhZCWcnRskCs36Q1Q00KBV6Cqh/ora8WN1+22dY07AZdn6Gel8QZ3t26XYPImtcL8WV/eqjhVmMEw4g==
+"@types/yargs@^15.0.10":
+  version "15.0.10"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-15.0.10.tgz#0fe3c8173a0d5c3e780b389050140c3f5ea6ea74"
+  integrity sha512-z8PNtlhrj7eJNLmrAivM7rjBESG6JwC5xP3RVk12i/8HVP7Xnx/sEmERnRImyEuUaJfO942X0qMOYsoupaJbZQ==
   dependencies:
     "@types/yargs-parser" "*"
 
@@ -49,10 +49,10 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
     "@types/color-name" "^1.1.1"
     color-convert "^2.0.1"
 
-batch-cluster@^5.11.2:
-  version "5.11.2"
-  resolved "https://registry.yarnpkg.com/batch-cluster/-/batch-cluster-5.11.2.tgz#518cb7dca3459fe74289e4384b68afd849b4eb54"
-  integrity sha512-+9ZL6DKnUS75i1aDH8ltCa4q4P5oHo7LYZkKnH7BBbERPqkTxt2lCtkLHo/p37yv2SSr5BVNABnfRrtgq0fv9g==
+batch-cluster@^5.11.3:
+  version "5.11.3"
+  resolved "https://registry.yarnpkg.com/batch-cluster/-/batch-cluster-5.11.3.tgz#9ba2fec6bd45ded668495d7d8eecf7d730f67397"
+  integrity sha512-oOYnoLQSvSNbJVcG4OtzScjLWMsirT21MNwZ2xdqDZQRqhUtrBYybLZU7ls8J44NBV/vOBmGf4/OHmpzEnl57Q==
 
 chalk@^4.0.0, chalk@^4.1.0:
   version "4.1.0"
@@ -117,27 +117,27 @@ escalade@^3.1.1:
   resolved "https://registry.yarnpkg.com/escalade/-/escalade-3.1.1.tgz#d8cfdc7000965c5a0174b4a82eaa5c0552742e40"
   integrity sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==
 
-exiftool-vendored.exe@^12.6.0:
-  version "12.6.0"
-  resolved "https://registry.yarnpkg.com/exiftool-vendored.exe/-/exiftool-vendored.exe-12.6.0.tgz#1dcbbcfa61ae0336fc003aee08cf2547a990c160"
-  integrity sha512-gJSjt1YyVU5B1WfuP7TVv7rGM3MnM0V5zw+Q7mM3zzvKl4WAmkQaPPkRGDoRZUhFqK8bUz2WbcniZOgw5LGcnA==
+exiftool-vendored.exe@^12.10.0:
+  version "12.10.0"
+  resolved "https://registry.yarnpkg.com/exiftool-vendored.exe/-/exiftool-vendored.exe-12.10.0.tgz#0a6eca116553e37a2bb5ffa96ea529269090fb36"
+  integrity sha512-jGH88GvI3xwZVRgyp8+E1bi+IbhcEU4m1NEw3OTBw/r4BoQxgZY7f4MeZeldchMOpnqLXUs8D4HoelhkJl35fA==
 
-exiftool-vendored.pl@^12.6.0:
-  version "12.6.0"
-  resolved "https://registry.yarnpkg.com/exiftool-vendored.pl/-/exiftool-vendored.pl-12.6.0.tgz#af093b98b91770515c65279d23abfd15efdcba84"
-  integrity sha512-XeALcaaPKQWhEYiUik3KmhBLFKYNd44OWZLi7x8lvys5VH1a5ZpSNhErp+teeaPs0PkPWCImieElaXLIo9DG6g==
+exiftool-vendored.pl@^12.10.0:
+  version "12.10.0"
+  resolved "https://registry.yarnpkg.com/exiftool-vendored.pl/-/exiftool-vendored.pl-12.10.0.tgz#9a6c7613a3380429e2ef8efda6887a41639306ff"
+  integrity sha512-2nvvQ5OUucU0A96fdGbAn+JG3xJToR1gi5SCZ5J3Y6g+1mVZ8HImKLxjKZ4YSbPA6M3ia738Z00BattyCFSjvg==
 
-exiftool-vendored@^12.2.0:
-  version "12.2.0"
-  resolved "https://registry.yarnpkg.com/exiftool-vendored/-/exiftool-vendored-12.2.0.tgz#48a52eff3f481b8ffd0cf7f2c9ec46ead24784de"
-  integrity sha512-1YKbJf1Ttm3TqcRlJQrSUgQGOR0kKhyIpUnD+dFppoinl0E0KHandBKqEtLirwFVOtaUnOjjx9ywRGOoipyumA==
+exiftool-vendored@^12.3.1:
+  version "12.3.1"
+  resolved "https://registry.yarnpkg.com/exiftool-vendored/-/exiftool-vendored-12.3.1.tgz#e87553700d6b1c10b71073d687ef2c2acda9f3f0"
+  integrity sha512-7vcF56XUwHUr7hTD5IICecf9NeD/5E9Rp9rFq+zmN1EaqkGIYJN5qwltf6F1ARY4SxGLGp9f3MT5MM46YuJMOA==
   dependencies:
-    batch-cluster "^5.11.2"
+    batch-cluster "^5.11.3"
     luxon "^1.25.0"
     tz-lookup "^6.1.25"
   optionalDependencies:
-    exiftool-vendored.exe "^12.6.0"
-    exiftool-vendored.pl "^12.6.0"
+    exiftool-vendored.exe "^12.10.0"
+    exiftool-vendored.pl "^12.10.0"
 
 get-caller-file@^2.0.5:
   version "2.0.5"
@@ -253,10 +253,10 @@ ts-toolbelt@^6.15.1:
   resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.5.tgz#cb3b43ed725cb63644782c64fbcad7d8f28c0a83"
   integrity sha512-FZIXf1ksVyLcfr7M317jbB67XFJhOO1YqdTcuGaq9q5jLUoTikukZ+98TPjKiP2jC5CgmYdWWYs0s2nLSU0/1A==
 
-typescript@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.3.tgz#153bbd468ef07725c1df9c77e8b453f8d36abba5"
-  integrity sha512-tEu6DGxGgRJPb/mVPIZ48e69xCn2yRmCgYmDugAVwmJ6o+0u1RI18eO7E7WBTLYLaEVVOhwQmcdhQHweux/WPg==
+typescript@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.2.tgz#6369ef22516fe5e10304aae5a5c4862db55380e9"
+  integrity sha512-thGloWsGH3SOxv1SoY7QojKi0tc+8FnOmiarEGMbd/lar7QOEd3hvlx3Fp5y6FlDUGl9L+pd4n2e+oToGMmhRQ==
 
 tz-lookup@^6.1.25:
   version "6.1.25"
@@ -279,7 +279,7 @@ wrap-ansi@^7.0.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
 
-y18n@^5.0.2:
+y18n@^5.0.5:
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/y18n/-/y18n-5.0.5.tgz#8769ec08d03b1ea2df2500acef561743bbb9ab18"
   integrity sha512-hsRUr4FFrvhhRH12wOdfs38Gy7k2FFzB9qgN9v3aLykRq0dRcdcpz5C9FxdS2NuhOrI/628b/KSTJ3rwHysYSg==
@@ -289,15 +289,15 @@ yargs-parser@^20.2.2:
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.3.tgz#92419ba867b858c868acf8bae9bf74af0dd0ce26"
   integrity sha512-emOFRT9WVHw03QSvN5qor9QQT9+sw5vwxfYweivSMHTcAXPefwVae2FjO7JJjj8hCE4CzPOPeFM83VwT29HCww==
 
-yargs@^16.1.0:
-  version "16.1.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-16.1.0.tgz#fc333fe4791660eace5a894b39d42f851cd48f2a"
-  integrity sha512-upWFJOmDdHN0syLuESuvXDmrRcWd1QafJolHskzaw79uZa7/x53gxQKiR07W59GWY1tFhhU/Th9DrtSfpS782g==
+yargs@^16.1.1:
+  version "16.1.1"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-16.1.1.tgz#5a4a095bd1ca806b0a50d0c03611d38034d219a1"
+  integrity sha512-hAD1RcFP/wfgfxgMVswPE+z3tlPFtxG8/yWUrG2i17sTWGCGqWnxKcLTF4cUKDUK8fzokwsmO9H0TDkRbMHy8w==
   dependencies:
     cliui "^7.0.2"
     escalade "^3.1.1"
     get-caller-file "^2.0.5"
     require-directory "^2.1.1"
     string-width "^4.2.0"
-    y18n "^5.0.2"
+    y18n "^5.0.5"
     yargs-parser "^20.2.2"
