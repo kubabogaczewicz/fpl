@@ -43,6 +43,7 @@ const normalizeExtension = R.cond<string, string>([
 
 type FplArguments = {
   verbose: number;
+  limit?: number;
 };
 type OrganizeArguments = FplArguments & {
   srcDirectory: string;
@@ -56,9 +57,12 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
   const dryRun = argv.dryRun;
   const operation = argv.operation;
   const verbose = Math.max(argv.verbose, dryRun ? 1 : 0);
+  const limit = argv.limit;
 
   const execUnlessDryRun = executeIf(!dryRun);
   const log = logger(verbose);
+
+  log.vvv("Starting organize, argv: ", argv);
 
   const knownExistingFolders = new Set<string>();
   function ensureSubfolderExists(parentDirPath: string, subfolderName: string) {
@@ -97,6 +101,10 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
   const spinner = ora("Collecting files").start();
   let files = walk(srcPath);
   spinner.succeed(`Collected ${files.length} files`);
+  if (limit != null && files.length > limit) {
+    log.v(`Limiting number of processed files to ${limit}`);
+    files = R.take(limit, files);
+  }
 
   const out = new FlexProgress.Output();
   const bar = new FlexProgress.Bar({ width: 25 });

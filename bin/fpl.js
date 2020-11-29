@@ -13,4 +13,8 @@ yargs(process.argv.slice(2))
     type: "count",
     description: "Run with verbose logging",
   })
+  .option("limit", {
+    type: "number",
+    description: "Process at max n number of files. Useful for tests.",
+  })
   .parse();
