@@ -1,6 +1,7 @@
 import FlexProgress from "@dinoabsoluto/flex-progress";
 import { execFileSync } from "child_process";
 import { ExifDateTime, Tags } from "exiftool-vendored";
+import { FplArguments } from "fpl-types.js";
 import fs from "fs";
 import ora from "ora";
 import path from "path";
@@ -46,17 +47,13 @@ const normalizeExtension = R.cond<string, string>([
   [R.T, R.toLower],
 ]);
 
-type FplArguments = {
-  verbose: number;
-  limit?: number;
-};
-type OrganizeArguments = FplArguments & {
+interface OrganizeArguments extends FplArguments {
   srcDirectory: string;
   targetDirectory: string;
   dryRun: boolean;
   operation: "clone" | "copy" | "move";
   subfolderFormat: "year" | "year-month";
-};
+}
 export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
   const srcPath = argv.srcDirectory;
   const dstPath = argv.targetDirectory;

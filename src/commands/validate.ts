@@ -1,4 +1,5 @@
 import FlexProgress from "@dinoabsoluto/flex-progress";
+import { FplArguments } from "fpl-types.js";
 import fs from "fs/promises";
 import { MediaFile } from "models.js";
 import ora from "ora";
@@ -19,17 +20,20 @@ async function* fileStatuses(files: ReturnType<typeof walk>): AsyncIterable<[boo
   }
 }
 
-export const handler = async (argv: yargs.Arguments) => {
-  const dirpath = argv.directory as string;
+interface ValidateArguments extends FplArguments {
+  directory: string;
+}
+export const handler = async (argv: yargs.Arguments<ValidateArguments>) => {
+  const { directory } = argv;
 
   try {
-    await fs.stat(dirpath);
+    await fs.stat(directory);
   } catch (e) {
-    ora(`Cannot open directory: ${dirpath}`).fail();
+    ora(`Cannot open directory: ${directory}`).fail();
     process.exit(1);
   }
   const spinner = ora("Collecting files").start();
-  let files = walk(dirpath);
+  let files = walk(directory);
   spinner.succeed();
 
   let badFiles = [];
