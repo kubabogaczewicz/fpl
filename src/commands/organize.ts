@@ -140,6 +140,7 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
 
     const metadata = file.metadata!;
     const exifCreateDateTime = R.cond<Tags, ExifDateTime>([
+      [R.propIs(ExifDateTime, "CreationDate"), R.prop("CreationDate") as (t: Tags) => ExifDateTime],
       [R.propIs(ExifDateTime, "CreateDate"), R.prop("CreateDate") as (t: Tags) => ExifDateTime],
       [R.propIs(ExifDateTime, "DateTimeOriginal"), R.prop("DateTimeOriginal") as (t: Tags) => ExifDateTime],
       [R.propIs(ExifDateTime, "DateTimeCreated"), R.prop("DateTimeCreated") as (t: Tags) => ExifDateTime],
