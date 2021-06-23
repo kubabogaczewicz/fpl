@@ -11,7 +11,9 @@ export const command = "validate <directory>";
 
 export const describe = `Validates that all files in passed directory are organizable. Checks only known types of files, checks directories recursively`;
 
-export const builder = () => {};
+export const builder = (yargs: yargs.Argv) => {
+  return yargs;
+};
 
 async function* fileStatuses(files: ReturnType<typeof walk>): AsyncIterable<[boolean, MediaFile]> {
   for (const file of files) {

@@ -24,7 +24,7 @@ export const command = "organize <srcDirectory> <targetDirectory";
 export const describe = `Organizes all files from srcDirectory (recursively) into targetDirectory`;
 
 export const builder = (yargs: yargs.Argv) => {
-  yargs
+  return yargs
     .option("dry-run", {
       type: "boolean",
       default: false,
@@ -146,11 +146,11 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
       [R.propIs(ExifDateTime, "DateTimeCreated"), R.prop("DateTimeCreated") as (t: Tags) => ExifDateTime],
       [R.propIs(ExifDateTime, "FileModifyDate"), R.prop("FileModifyDate") as (t: Tags) => ExifDateTime],
     ])(metadata)!;
-    const createDateTime = exifCreateDateTime.toDateTime().toUTC();
+    const createDateTime = exifCreateDateTime.toDateTime();
     let processed = false;
     const subfolderPath = createDateTime.toFormat(subfolderFormat === "year" ? "yyyy" : "yyyy/LL");
     ensureSubfolderExists(dstPath, subfolderPath);
-    const formattedDate = createDateTime.toFormat("yyyy-LL-dd HH-mm-ss");
+    const formattedDate = createDateTime.toFormat("yyyy-LL-dd'T'HHmmssZZZ");
     let exclusiveSuffix = "";
     let retryCount = 0;
     const ext = fileExtension(file);
@@ -160,7 +160,7 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
       try {
         fs.accessSync(fullDstFilepath, fs.constants.F_OK);
         log.vvv(`File ${fullDstFilepath} already exists, try with bigger suffix`);
-        exclusiveSuffix = ` (${++retryCount})`;
+        exclusiveSuffix = `--${++retryCount}`;
         maybeFilename = `${formattedDate}${exclusiveSuffix}${ext}`;
         fullDstFilepath = path.join(dstPath, subfolderPath, maybeFilename);
       } catch (e) {
