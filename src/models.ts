@@ -1,20 +1,12 @@
 import ef from "exiftool-vendored";
-import path from "path";
 import { regexpTest } from "./utils.js";
 
 const exiftool = ef.exiftool;
 
 export abstract class MediaFile {
-  dirpath: string;
-  filename: string;
-  filepath: string;
   metadata?: ef.Tags;
 
-  constructor(dirpath: string, filename: string) {
-    this.dirpath = dirpath;
-    this.filename = filename;
-    this.filepath = path.join(dirpath, filename);
-  }
+  constructor(public filepath: string) {}
 
   async loadMetadata() {
     this.metadata = await exiftool.read(this.filepath);
@@ -24,10 +16,10 @@ export abstract class MediaFile {
 }
 
 export class ImageFile extends MediaFile {
-  static match = regexpTest(/\.(jpe?g|heic)$/i);
+  static match = regexpTest(/\.(jpe?g|heic|arw)$/i);
 
-  constructor(dirpath: string, filename: string) {
-    super(dirpath, filename);
+  constructor(filepath: string) {
+    super(filepath);
   }
 
   isValid() {
@@ -38,8 +30,8 @@ export class ImageFile extends MediaFile {
 export class MovieFile extends MediaFile {
   static match = regexpTest(/\.(mov|mp4)$/i);
 
-  constructor(dirpath: string, filename: string) {
-    super(dirpath, filename);
+  constructor(filepath: string) {
+    super(filepath);
   }
 
   isValid() {

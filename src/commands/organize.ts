@@ -1,16 +1,17 @@
 import FlexProgress from "@dinoabsoluto/flex-progress";
 import { execFileSync } from "child_process";
-import { ExifDateTime, Tags } from "exiftool-vendored";
-import { FplArguments } from "fpl-types.js";
+import ef, { ExifDateTime, Tags } from "exiftool-vendored";
 import fs from "fs";
+import logSymbols from "log-symbols";
 import ora from "ora";
 import path from "path";
 import R from "ramda";
 import yargs from "yargs";
 import { logger } from "../log.js";
-import { MediaFile } from "../models.js";
-import { executeIf, regexpTest } from "../utils.js";
-import { walk } from "../walker.js";
+import { ImageFile, MediaFile, MovieFile } from "../models.js";
+import { collectMediaFiles, regexpTest } from "../utils.js";
+
+const exiftool = ef.exiftool;
 
 declare module "ramda" {
   export function propIs<Type, KeyName extends string, O extends Record<KeyName, Type>>(
@@ -19,7 +20,7 @@ declare module "ramda" {
   ): (obj: any) => obj is O;
 }
 
-export const command = "organize <srcDirectory> <targetDirectory";
+export const command = "organize <srcDirectory> <targetDirectory>";
 
 export const describe = `Organizes all files from srcDirectory (recursively) into targetDirectory`;
 
@@ -28,17 +29,39 @@ export const builder = (yargs: yargs.Argv) => {
     .option("dry-run", {
       type: "boolean",
       default: false,
-      description: "Do not perform actual copying of files",
+      description: "Do not perform actual copying of files, instead print what would happen to stdout.",
+    })
+    .option("limit", {
+      type: "number",
+      default: Infinity,
+      description: "Process at max n number of files. Useful for tests. -1 turns off limit.",
     })
     .option("operation", {
       choices: ["copy", "clone", "move"],
       default: "clone",
-      description: "What to do with organized files.",
+      description: "What to do with organized files. Clone is possible only within the same apfs volume.",
     })
     .option("subfolder-format", {
       choices: ["year", "year-month"],
       default: "year",
       description: "How to split files into subfolders.",
+    })
+    .option("verbose", {
+      alias: "v",
+      type: "boolean",
+      conflicts: ["silent", "debug"],
+      description: "Run with verbose logging",
+    })
+    .option("debug", {
+      type: "boolean",
+      conflicts: ["silent", "verbose"],
+      description: "Run with debug-level logging",
+    })
+    .option("silent", {
+      alias: "s",
+      type: "boolean",
+      conflicts: ["verbose", "debug"],
+      description: "Run with minimal logging",
     });
 };
 
@@ -47,26 +70,40 @@ const normalizeExtension = R.cond<string, string>([
   [R.T, R.toLower],
 ]);
 
-interface OrganizeArguments extends FplArguments {
+type OrganizeArguments = {
   srcDirectory: string;
   targetDirectory: string;
   dryRun: boolean;
+  limit: number;
   operation: "clone" | "copy" | "move";
   subfolderFormat: "year" | "year-month";
-}
+  silent?: boolean;
+  verbose?: boolean;
+  debug?: boolean;
+};
+
+type FeedbackType = "silent" | "standard" | "verbose";
+
 export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
   const srcPath = argv.srcDirectory;
   const dstPath = argv.targetDirectory;
   const dryRun = argv.dryRun;
   const operation = argv.operation;
   const subfolderFormat = argv.subfolderFormat;
-  const verbose = Math.max(argv.verbose, dryRun ? 1 : 0);
-  const limit = argv.limit;
+  const feedbackType =
+    argv.verbose === true || argv.debug === true ? "verbose" : argv.silent === true ? "silent" : "standard";
+  const feedbackLevel = argv.silent === true ? 0 : argv.verbose === true ? 2 : argv.debug === true ? 3 : 1;
+  const limit = argv.limit > 0 ? argv.limit : Infinity;
 
-  const execUnlessDryRun = executeIf(!dryRun);
-  const log = logger(verbose);
-
-  log.vvv("Starting organize, argv: ", argv);
+  const execUnlessDryRun = (perform: () => void, describe: string | (() => void)) => {
+    if (dryRun) {
+      console.log(typeof describe === "function" ? describe() : describe);
+    } else {
+      perform();
+    }
+  };
+  const log = logger(feedbackLevel);
+  log.vv(`Starting organize, argv: `, argv);
 
   const knownExistingFolders = new Set<string>();
   function ensureSubfolderExists(parentDirPath: string, subfolderName: string) {
@@ -75,68 +112,63 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
       return;
     }
     try {
-      log.vvv(`Checking if target directory ${subfolderPath} exists`);
+      log.vv(`Checking if target directory ${subfolderPath} exists`);
       fs.accessSync(subfolderPath, fs.constants.F_OK);
     } catch (e) {
-      log.vv(`Creating target directory ${subfolderPath}`);
+      log.v(`Creating target directory ${subfolderPath}`);
       execUnlessDryRun(() => {
         try {
           fs.mkdirSync(subfolderPath, { recursive: true });
         } catch (e) {
-          ora(`Cannot create directory: ${ensureSubfolderExists}`).fail();
-          throw e;
+          log(`${logSymbols.error} Cannot create directory: ${ensureSubfolderExists}`);
+          process.exit(1);
         }
-      });
+      }, `mkdir -r ${subfolderPath}`);
     } finally {
       knownExistingFolders.add(subfolderPath);
     }
   }
 
   try {
-    log.vvv("Checking access to source directory...");
     fs.accessSync(srcPath, fs.constants.R_OK | fs.constants.X_OK);
-    log.vvv(" => Access to source directory OK");
   } catch (e) {
-    log.vvv(" => Access to source directory FAIL");
-    ora(`Cannot open directory: ${srcPath}`).fail();
-    throw e;
+    log(`${logSymbols.error} Cannot open directory: ${srcPath}`);
+    process.exit(1);
   }
 
-  const spinner = ora("Collecting files").start();
-  let files = walk(srcPath);
+  const spinner = ora({ text: "Collecting files", isSilent: feedbackType === "silent" }).start();
+  let files = await collectMediaFiles(srcPath, [ImageFile, MovieFile], log, limit);
   spinner.succeed(`Collected ${files.length} files`);
-  if (limit != null && files.length > limit) {
-    log.v(`Limiting number of processed files to ${limit}`);
-    files = R.take(limit, files);
-  }
 
   const out = new FlexProgress.Output();
   const bar = new FlexProgress.Bar({ width: 25 });
   const filesCounter = new FlexProgress.Text();
 
-  out.append(
-    new FlexProgress.HideCursor(),
-    new FlexProgress.Spinner(),
-    1,
-    "Processing files... ",
-    1,
-    "⸨",
-    bar,
-    "⸩",
-    1,
-    filesCounter,
-    1,
-    `of ${files.length}`,
-  );
+  if (feedbackType === "standard") {
+    out.append(
+      new FlexProgress.HideCursor(),
+      new FlexProgress.Spinner(),
+      1,
+      "Processing files... ",
+      1,
+      "⸨",
+      bar,
+      "⸩",
+      1,
+      filesCounter,
+      1,
+      `of ${files.length}`,
+    );
+  }
 
-  const fileExtension: (m: MediaFile) => string = R.pipe(R.prop("filename"), path.extname, normalizeExtension);
-  let count = 0;
-  filesCounter.text = count.toString();
+  const fileExtension: (m: MediaFile) => string = R.pipe(R.prop("filepath"), path.extname, normalizeExtension);
+  let processedCounter = 0;
+  filesCounter.text = processedCounter.toString();
 
   let loaders = files.map(async (file) => {
     await file.loadMetadata();
-    bar.ratio = (count++ % files.length) / (files.length - 1);
-    filesCounter.text = count.toString();
+    bar.ratio = (processedCounter++ % files.length) / (files.length - 1);
+    filesCounter.text = processedCounter.toString();
 
     const metadata = file.metadata!;
     const exifCreateDateTime = R.cond<Tags, ExifDateTime>([
@@ -159,32 +191,47 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
     while (!processed) {
       try {
         fs.accessSync(fullDstFilepath, fs.constants.F_OK);
-        log.vvv(`File ${fullDstFilepath} already exists, try with bigger suffix`);
+        log.vv(`File ${fullDstFilepath} already exists, try with bigger suffix`);
         exclusiveSuffix = `--${++retryCount}`;
         maybeFilename = `${formattedDate}${exclusiveSuffix}${ext}`;
         fullDstFilepath = path.join(dstPath, subfolderPath, maybeFilename);
       } catch (e) {
         // doesn't exists, we can copy!
-        log.v(`${operation} ${file.filepath} → ${fullDstFilepath}`);
-        execUnlessDryRun(() => {
-          switch (operation) {
-            case "clone":
-            case "copy": {
-              execFileSync(`cp`, ["-c", file.filepath, fullDstFilepath]);
-              break;
+        log.v(`${operation} ${path.relative(srcPath, file.filepath)} → ${path.relative(dstPath, fullDstFilepath)}`);
+        execUnlessDryRun(
+          () => {
+            switch (operation) {
+              case "copy": {
+                fs.copyFileSync(file.filepath, fullDstFilepath);
+                break;
+              }
+              case "clone": {
+                execFileSync(`cp`, ["-c", file.filepath, fullDstFilepath]);
+                break;
+              }
+              case "move": {
+                fs.renameSync(file.filepath, fullDstFilepath);
+                break;
+              }
             }
-            case "move": {
-              fs.renameSync(file.filepath, fullDstFilepath);
-              break;
+          },
+          () => {
+            switch (operation) {
+              case "copy":
+                return `cp '${file.filepath}' '${fullDstFilepath}'`;
+              case "clone":
+                return `cp -c '${file.filepath}' '${fullDstFilepath}'`;
+              case "move":
+                return `mv '${file.filepath}' '${fullDstFilepath}'`;
             }
-          }
-        });
+          },
+        );
         processed = true;
       }
     }
   });
   await Promise.all(loaders);
   out.clear();
-  ora(`Processed ${files.length} files`).succeed();
-  process.exit(0);
+  log(`${logSymbols.success} Processed ${files.length} files`);
+  exiftool.end();
 };

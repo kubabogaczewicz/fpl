@@ -37,3 +37,11 @@ declare module "ramda" {
   }
 }
 export const walk: (x: string) => MediaFile[] = R.pipe(deepWalk, R.flatten, R.filter(properMediaFiles));
+
+export async function* asyncWalk(dirpath: string): AsyncGenerator<string> {
+  for await (const d of await fs.promises.opendir(dirpath)) {
+    const entry = path.join(dirpath, d.name);
+    if (d.isDirectory()) yield* await asyncWalk(entry);
+    else if (d.isFile()) yield entry;
+  }
+}
