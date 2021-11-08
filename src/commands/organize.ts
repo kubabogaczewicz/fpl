@@ -1,6 +1,6 @@
 import FlexProgress from "@dinoabsoluto/flex-progress";
 import { execFileSync } from "child_process";
-import ef, { ExifDateTime, Tags } from "exiftool-vendored";
+import { ExifDateTime, Tags } from "exiftool-vendored";
 import fs from "fs";
 import logSymbols from "log-symbols";
 import ora from "ora";
@@ -11,8 +11,6 @@ import { logger } from "../log.js";
 import { ImageFile, MediaFile, MovieFile } from "../models.js";
 import { collectMediaFiles, regexpTest } from "../utils.js";
 
-const exiftool = ef.exiftool;
-
 declare module "ramda" {
   export function propIs<Type, KeyName extends string, O extends Record<KeyName, Type>>(
     type: Type,
@@ -20,12 +18,12 @@ declare module "ramda" {
   ): (obj: any) => obj is O;
 }
 
-export const command = "organize <srcDirectory> <targetDirectory>";
+const command = "organize <srcDirectory> <targetDirectory>";
 
-export const describe = `Organizes all files from srcDirectory (recursively) into targetDirectory`;
+const describe = `Organizes all files from srcDirectory (recursively) into targetDirectory`;
 
-export const builder = (yargs: yargs.Argv) => {
-  return yargs
+const builder = (yargs: yargs.Argv) =>
+  yargs
     .option("dry-run", {
       type: "boolean",
       default: false,
@@ -37,12 +35,12 @@ export const builder = (yargs: yargs.Argv) => {
       description: "Process at max n number of files. Useful for tests. -1 turns off limit.",
     })
     .option("operation", {
-      choices: ["copy", "clone", "move"],
+      choices: ["copy", "clone", "move"] as const,
       default: "clone",
       description: "What to do with organized files. Clone is possible only within the same apfs volume.",
     })
     .option("subfolder-format", {
-      choices: ["year", "year-month"],
+      choices: ["year", "year-month"] as const,
       default: "year",
       description: "How to split files into subfolders.",
     })
@@ -63,7 +61,6 @@ export const builder = (yargs: yargs.Argv) => {
       conflicts: ["verbose", "debug"],
       description: "Run with minimal logging",
     });
-};
 
 const normalizeExtension = R.cond<string, string>([
   [regexpTest(/\.jpe?g/i), R.always(".jpg")],
@@ -82,9 +79,7 @@ type OrganizeArguments = {
   debug?: boolean;
 };
 
-type FeedbackType = "silent" | "standard" | "verbose";
-
-export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
+const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
   const srcPath = argv.srcDirectory;
   const dstPath = argv.targetDirectory;
   const dryRun = argv.dryRun;
@@ -233,5 +228,12 @@ export const handler = async (argv: yargs.Arguments<OrganizeArguments>) => {
   await Promise.all(loaders);
   out.clear();
   log(`${logSymbols.success} Processed ${files.length} files`);
-  exiftool.end();
 };
+
+const organizeCommand: yargs.CommandModule<{}, OrganizeArguments> = {
+  command,
+  describe,
+  builder: builder as unknown as yargs.CommandBuilder<{}, OrganizeArguments>,
+  handler,
+};
+export default organizeCommand;

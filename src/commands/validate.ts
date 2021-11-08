@@ -1,5 +1,4 @@
 import FlexProgress from "@dinoabsoluto/flex-progress";
-import ef from "exiftool-vendored";
 import fs from "fs/promises";
 import logSymbols from "log-symbols";
 import ora from "ora";
@@ -10,14 +9,9 @@ import { ImageFile, MediaFile } from "../models.js";
 import { collectMediaFiles } from "../utils.js";
 import { walk } from "../walker.js";
 
-const exiftool = ef.exiftool;
-export const command = "validate <directory>";
+const command = "validate <directory>";
 
-export const describe = `Validates that all files in passed directory are organizable. Checks only known types of files, checks directories recursively`;
-
-export const builder = (yargs: yargs.Argv) => {
-  return yargs;
-};
+const describe = `Validates that all files in passed directory are organizable. Checks only known types of files, checks directories recursively`;
 
 async function* fileStatuses(files: ReturnType<typeof walk>): AsyncIterable<MediaFile> {
   for (const file of files) {
@@ -29,7 +23,7 @@ async function* fileStatuses(files: ReturnType<typeof walk>): AsyncIterable<Medi
 interface ValidateArguments {
   directory: string;
 }
-export const handler = async (argv: yargs.Arguments<ValidateArguments>) => {
+const handler = async (argv: yargs.Arguments<ValidateArguments>) => {
   const { directory } = argv;
   const log = logger(1);
 
@@ -74,16 +68,22 @@ export const handler = async (argv: yargs.Arguments<ValidateArguments>) => {
     }
   }
   out.clear();
-  exiftool.end();
 
   if (!R.isEmpty(badFiles)) {
     log(`${logSymbols.error} Validating files`);
     for (const f of badFiles) {
       process.stdout.write(f + "\n");
     }
-    process.exit(1);
+    throw "Not all files pass validation";
   } else {
     log(`${logSymbols.success} Validating files`);
-    process.exit(0);
   }
 };
+
+const validateCommand: yargs.CommandModule<{}, ValidateArguments> = {
+  command,
+  describe,
+  handler,
+};
+
+export default validateCommand;

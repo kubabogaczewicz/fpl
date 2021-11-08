@@ -4,13 +4,13 @@
   "description": "File-based Photo Library",
   "type": "module",
   "bin": {
-    "fpl": "bin/fpl.js"
+    "fpl": "dist/fpl.js"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "prepare": "tsc",
+    "prepare": "npm run build && chmod +x dist/fpl.js",
     "build": "tsc",
     "watch": "tsc --watch"
   },
@@ -19,15 +19,15 @@
   "private": true,
   "dependencies": {
     "@dinoabsoluto/flex-progress": "^2.4.0",
-    "@types/node": "^15.12.2",
-    "@types/ramda": "^0.27.40",
-    "@types/yargs": "^17.0.0",
-    "chalk": "^4.1.1",
-    "exiftool-vendored": "^14.5.0",
+    "@types/node": "^16.11.7",
+    "@types/ramda": "^0.27.47",
+    "@types/yargs": "^17.0.5",
+    "chalk": "^4.1.2",
+    "exiftool-vendored": "^15.6.0",
     "log-symbols": "^5.0.0",
-    "ora": "^5.4.1",
+    "ora": "^6.0.1",
     "ramda": "^0.27.1",
-    "typescript": "^4.3.2",
-    "yargs": "^17.0.1"
+    "typescript": "^4.4.4",
+    "yargs": "^17.2.1"
   }
 }
