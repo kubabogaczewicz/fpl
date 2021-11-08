@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node-script
+#!/usr/bin/env node
 
 import ef from "exiftool-vendored";
 import yargs from "yargs";
