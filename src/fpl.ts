@@ -11,7 +11,7 @@ await yargs(process.argv.slice(2))
   .command(validate)
   .command(organize)
   .demandCommand(1, "You must provide a command to use that tool")
-  .completion("completion")
+  .completion("completion", false)
   .strict()
   .wrap(120)
   .parse();
