@@ -70,7 +70,7 @@ const handler = async (argv: yargs.Arguments<ValidateArguments>) => {
   out.clear();
 
   if (!R.isEmpty(badFiles)) {
-    log(`${logSymbols.error} Validating files`);
+    log(`${logSymbols.error} Validating failed for ${badFiles.length} of ${files.length} files`);
     for (const f of badFiles) {
       process.stdout.write(f + "\n");
     }

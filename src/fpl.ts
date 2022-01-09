@@ -16,6 +16,7 @@ await yargs(process.argv.slice(2))
   .completion("completion", false)
   .strict()
   .wrap(120)
+  .showHelpOnFail(false)
   .parse();
 
 exiftool.end();
