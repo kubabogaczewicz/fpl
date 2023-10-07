@@ -16,7 +16,7 @@ export abstract class MediaFile {
 }
 
 export class ImageFile extends MediaFile {
-  static match = regexpTest(/\.(jpe?g|heic|arw|dng)$/i);
+  static match = regexpTest(/\.(jpe?g|heic|hif|arw|dng)$/i);
 
   constructor(filepath: string) {
     super(filepath);
